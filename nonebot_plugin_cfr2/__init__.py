@@ -1,16 +1,17 @@
-import boto3
-from botocore.exceptions import NoCredentialsError, ClientError
 import hashlib
 import os
-import random, string
-
+import secrets
 from datetime import datetime
 from pathlib import Path
 
+import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
+
 import nonebot
-from nonebot.plugin import PluginMetadata
 import nonebot.drivers
+from nonebot.plugin import PluginMetadata
 from nonebot.log import logger
+
 
 from .config import Config
 
@@ -110,13 +111,7 @@ except Exception as e:
 uploader: S3Uploader = S3Uploader(access_key, secret_key, bucket_name, region, endpoint_url, custom_domain)
 
 async def upload_file_bytes(file_bytes: bytes, ext_name: str) -> str:
-    def generate_random_string(length = 16):
-    # 定义字符集，包括大小写字母和数字
-        characters = string.ascii_letters + string.digits
-        # 生成随机字符串
-        random_string = ''.join(random.choice(characters) for _ in range(length))
-        return random_string
-    file_name = generate_random_string() + "." + ext_name
+    file_name = secrets.token_urlsafe(16) + "." + ext_name
     with open(file_name, "rb") as f:
         f.write(file_bytes)
     ret: str = await uploader.upload_file(str(Path(__file__).parent / file_name))
