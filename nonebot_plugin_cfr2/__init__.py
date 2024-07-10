@@ -1,6 +1,7 @@
 import hashlib
 import os
 import secrets
+import requests
 from datetime import datetime
 from pathlib import Path
 
@@ -23,6 +24,7 @@ __plugin_meta__ = PluginMetadata(
         "导入上传器: `from nonebot_plugin_cfr2 import uploader`\n"
         "上传文件: `uploader.upload_file(...)`\n"
         "上传文件字节: `uploader.upload_file_bytes(...)\n`"
+        "根据url上传文件: `uploader.upload_file_from_url(...)\n`"
     ),
     type="library",
     homepage="https://github.com/1v7w/nonebot-plugin-cfr2/",
@@ -54,7 +56,26 @@ class S3Uploader:
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_md5.update(chunk)
         return hash_md5.hexdigest()
+    
+    def download_file(self, url: str, local_file_path: str) -> None:
+        response = requests.get(url)
+        response.raise_for_status()
+        with open(local_file_path, 'wb') as f:
+            f.write(response.content)
 
+    async def upload_file_from_url(self, url: str) -> str:
+        local_file_path = secrets.token_urlsafe(16) + os.path.basename(url)
+        try:
+            self.download_file(url, local_file_path)
+            ret = await self.upload_file(local_file_path)
+            os.remove(local_file_path)
+            return ret
+        except requests.RequestException as e:
+            logger.error(f"Failed to download file from URL {url}. Error: {e}")
+        except Exception as e:
+            logger.error(f"An unexpected error occurred. Error: {e}")
+        os.remove(local_file_path)
+        return ""
     async def upload_file(self, local_file_path: str) -> str:
         try:
             ext_name = os.path.splitext(local_file_path)[1][1:]  # 获取文件扩展名
