@@ -95,4 +95,6 @@ from nonebot_plugin_cfr2 import uploader
 uploader.upload_file(str(image_file_path))
 # 上传字节
 uploader.upload_file_bytes(image_file_bytes, "jpg")
+# 根据url上传文件
+uploader.upload_file_from_url(image_url)
 ```

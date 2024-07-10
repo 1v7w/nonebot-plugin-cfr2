@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-cfr2"
-version = "0.1.2"
+version = "0.1.3"
 description = "Cloudfare R2 customer service plugin, used to connect the R2 storage bucket"
 authors = ["1v7w <1v7w@gascd.club>"]
 license = "Apache-2.0"
@@ -11,6 +11,7 @@ python = "^3.10"
 nonebot2 = "^2.0.0rc4"
 boto3 = "^1.34.0"
 botocore = "^1.34.0"
+requests = "^2.32.0"
 
 
 [build-system]
