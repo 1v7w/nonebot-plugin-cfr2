@@ -24,7 +24,7 @@ __plugin_meta__ = PluginMetadata(
         "上传文件字节: `uploader.upload_file_bytes(...)\n`"
     ),
     type="library",
-    homepage="https://github.com/Guyiiyu/nonebot-plugin-cfr2",
+    homepage="https://github.com/1v7w/nonebot-plugin-cfr2/",
     config=Config,
     supported_adapters=None,
 )
