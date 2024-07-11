@@ -24,6 +24,7 @@ __plugin_meta__ = PluginMetadata(
         "导入上传器: `from nonebot_plugin_cfr2 import uploader`\n"
         "上传文件: `uploader.upload_file(...)`\n"
         "上传文件字节: `uploader.upload_file_bytes(...)\n`"
+        "根据url上传文件: `uploader.upload_file_from_url(...)\n`"
     ),
     type="library",
     homepage="https://github.com/1v7w/nonebot-plugin-cfr2/",
