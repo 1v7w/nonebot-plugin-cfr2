@@ -24,7 +24,6 @@ __plugin_meta__ = PluginMetadata(
         "导入上传器: `from nonebot_plugin_cfr2 import uploader`\n"
         "上传文件: `uploader.upload_file(...)`\n"
         "上传文件字节: `uploader.upload_file_bytes(...)\n`"
-        "根据url上传文件: `uploader.upload_file_from_url(...)\n`"
     ),
     type="library",
     homepage="https://github.com/1v7w/nonebot-plugin-cfr2/",
@@ -76,6 +75,17 @@ class S3Uploader:
             logger.error(f"An unexpected error occurred. Error: {e}")
         os.remove(local_file_path)
         return ""
+    
+    async def upload_file_bytes(self, file_bytes: bytes, ext_name: str) -> str:
+        logger.debug(f"file_bytes length: {len(file_bytes)}")
+        file_name = secrets.token_urlsafe(16) + "." + ext_name
+        with open(file_name, "wb") as f:
+            f.write(file_bytes)
+        logger.debug(file_name)
+        ret: str = await self.upload_file(file_name)
+        os.remove(file_name)
+        return ret
+
     async def upload_file(self, local_file_path: str) -> str:
         try:
             ext_name = os.path.splitext(local_file_path)[1][1:]  # 获取文件扩展名
@@ -130,11 +140,3 @@ except Exception as e:
     logger.debug(f"custom_domain 未设置，将采用{endpoint_url}")
 
 uploader: S3Uploader = S3Uploader(access_key, secret_key, bucket_name, region, endpoint_url, custom_domain)
-
-async def upload_file_bytes(file_bytes: bytes, ext_name: str) -> str:
-    file_name = secrets.token_urlsafe(16) + "." + ext_name
-    with open(file_name, "rb") as f:
-        f.write(file_bytes)
-    ret: str = await uploader.upload_file(str(Path(__file__).parent / file_name))
-    os.remove(file_name)
-    return ret
